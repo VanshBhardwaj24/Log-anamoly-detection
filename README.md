@@ -1,56 +1,73 @@
-🕒 Time Series-Based Anomaly Detection (Optional Enhancement)
-In addition to the LSTM-based deep learning model, we integrate a classic time series anomaly detection approach to detect unexpected deviations in system log frequency or event occurrence over time. This serves as a complementary layer for systems where logs are timestamped and have temporal patterns.
+Log-Anomaly-Detection-using-Deep-Learning
+This project combines the power of the Drain algorithm for log parsing with Long Short-Term Memory (LSTM) neural networks and time series models for anomaly detection in system logs. The Drain algorithm preprocesses and compiles system logs into structured event templates, which are then used as input for both LSTM and statistical time series-based models. These models detect anomalies in the system execution and report them to the root user or system administrator.
 
-Supported Time Series Models:
-ARIMA (AutoRegressive Integrated Moving Average): Suitable for stationary time series after differencing.
+🧠 Introduction
+This project focuses on building an efficient system for detecting anomalies in system logs using a three-step process:
 
-Seasonal Decomposition + Z-Score Detection: Decomposes trend/seasonality from time series and detects outliers based on residuals.
+Drain Log Parsing: Employing the Drain algorithm, a fixed-depth tree-based online log parsing method. This algorithm preprocesses raw log messages using domain-specific regular expressions, compiles them into event templates, and structures them in a parse tree.
 
-Prophet (by Meta) (Optional): Useful for time series with strong seasonality, holidays, or irregular trends.
+LSTM-based Anomaly Detection: Using deep learning to learn patterns from structured sequences of log events and detect deviations.
 
-Workflow:
-Aggregation:
+Time Series-Based Anomaly Detection: Applying statistical models to detect abnormal spikes or drops in log event frequency over time.
 
-Convert structured log data into time series format (e.g., count of events per minute/hour).
+🚀 Getting Started
+Clone this repository:
 
-Group log templates over time using pandas.resample().
-
-Model Training & Detection:
-
-Train a time series model on historical (normal) log activity.
-
-Forecast expected log behavior and compare with actual values.
-
-Flag anomalies where the deviation exceeds a statistical threshold.
-
-Integration with LSTM (optional):
-
-Use time series models as a pre-filter or post-filter to validate LSTM-detected anomalies.
-
-Ensemble decision-making can be implemented based on both methods.
-
-Example (ARIMA + Log Count):
-python
+sh
 Copy
 Edit
-from statsmodels.tsa.arima.model import ARIMA
-import pandas as pd
+git clone https://github.com/DepressedSage/Log-Anomaly-Detection-using-Deep-Learning.git
+Navigate to the project directory:
 
-# Assume df['timestamp'] is already parsed
-df.set_index('timestamp', inplace=True)
-log_counts = df.resample('1min').size()
+sh
+Copy
+Edit
+cd Log-Anomaly-Detection-using-Deep-Learning
+Install the required dependencies:
 
-# Fit ARIMA
-model = ARIMA(log_counts, order=(1, 1, 1))
-model_fit = model.fit()
+sh
+Copy
+Edit
+pip install numpy pandas keras tensorflow statsmodels matplotlib
+⚙️ Prerequisites
+Ensure you have the following dependencies:
 
-# Forecast and calculate residual
-forecast = model_fit.predict(start=log_counts.index[0], end=log_counts.index[-1])
-residuals = log_counts - forecast
-anomalies = residuals[abs(residuals) > 3 * residuals.std()]  # Z-score threshold
+Python >= 3.6
 
-print("Anomalies Detected:", anomalies)
-📁 Updated Project Structure
+NumPy
+
+Pandas
+
+Keras
+
+TensorFlow
+
+Statsmodels
+
+Matplotlib (for time series visualization)
+
+🧩 Usage
+1. Drain Log Parsing:
+Preprocess raw log messages using domain-specific regular expressions to remove variable components.
+
+Parse messages into structured templates using a parse tree based on length and token similarity.
+
+2. LSTM-based Anomaly Detection:
+Input structured log data into an LSTM model trained on normal log sequences.
+
+Detect and flag sequences that deviate significantly from learned patterns.
+
+3. Time Series-Based Anomaly Detection (New):
+Convert logs into time series (e.g., event count per minute/hour).
+
+Train a statistical model like ARIMA or use Z-score detection on residuals.
+
+Detect anomalies based on abnormal frequency patterns.
+
+🔄 Project Structure and Flow
+
+
+📁 Project Structure
 text
 Copy
 Edit
@@ -64,7 +81,7 @@ Edit
 │
 ├── models/
 │   └── lstm_model.py
-│   └── time_series_model.py  <-- NEW
+│   └── time_series_model.py  # NEW
 │
 ├── utils/
 │   └── preprocessing.py
@@ -72,9 +89,15 @@ Edit
 │
 ├── notebooks/
 │   └── exploratory_analysis.ipynb
-│   └── time_series_anomaly_detection.ipynb  <-- NEW
-🔍 Evaluation
-For LSTM: Accuracy, Precision, Recall, F1.
+│   └── time_series_anomaly_detection.ipynb  # NEW
+📊 Results
+LSTM: Accuracy, Precision, Recall, and F1-score metrics reflect how well the model detects anomalous log sequences.
 
-For Time Series: Mean Absolute Error (MAE), Anomaly precision (how well time-based anomalies match real-world issues).
+Time Series: Anomalies are detected based on deviations in event frequency using residual analysis and statistical thresholds (e.g., Z-score or confidence intervals).
+
+🤝 Contributing
+Contributions are welcome! Feel free to fork this repo, improve it, and submit a pull request.
+
+📄 License
+This project is licensed under the MIT License.
 
